@@ -43,4 +43,3 @@
 ![Hotel Search Page](./screenshots/Hotels.png)
 ![Attractions Page](./screenshots/Attractions.png)
 ![About Us Page](./screenshots/About.png)
-
