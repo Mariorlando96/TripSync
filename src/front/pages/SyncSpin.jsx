@@ -7,7 +7,7 @@ const cities = [
     "Paris", "Tokyo", "New York", "Sydney", "Barcelona",
     "Rio de Janeiro", "Rome", "Madrid", "London", "Cairo",
     "Dublin", "Istanbul", "San Francisco", "Berlin", "Mexico City",
-    "Vancouver", "Seoul", "Johannesburg", "Beunos Aires", "Amsterdam",
+    "Vancouver", "Seoul", "Johannesburg", "Buenos Aires", "Amsterdam",
 ];
 
 const getRandomRotation = () => {
