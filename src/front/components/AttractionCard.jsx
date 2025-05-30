@@ -42,14 +42,14 @@ export const AttractionCard = ({ place, isWishlisted, onToggleWishlist }) => {
 
             <div className="card-body px-3 pt-3  d-flex flex-column justify-content-between">
                 <div>
-                    <h6 className="card-title mb-1 text-truncate" title={name}>{name}</h6>
+                    <h6 className="card-title mb-1 text-truncate" title={name}>{place.displayName?.text}</h6>
                     <p className="text-muted small mb-2 text-truncate" title={formatted_address}>
-                        {formatted_address}
+                        {place.formattedAddress}
                     </p>
 
                     <div className="d-flex justify-content-between align-items-center mb-2">
                         <span className="badge bg-light text-dark px-2 py-1">
-                            ⭐ {rating || "N/A"}
+                            ⭐ {place.rating || "N/A"}
                         </span>
                         <span className="text-muted small">
                             💰 {price_level ? `$`.repeat(price_level) : "N/A"}

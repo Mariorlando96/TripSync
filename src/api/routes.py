@@ -488,35 +488,60 @@ def get_attractions():
         return jsonify({"error": "Destination is required"}), 400
 
     try:
-        # We'll fetch both restaurants and attractions
-        queries = [
-            f"restaurant in {destination}",
-            f"tourist_attraction in {destination}"
-        ]
-
         all_results = []
 
+        # ✅ Use broader and more effective search terms
+        queries = [
+            f"popular restaurants in {destination}",
+            f"things to do in {destination}"
+        ]
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": GOOGLE_API_KEY,
+            "X-Goog-FieldMask": (
+                "places.id,places.displayName,places.formattedAddress,"
+                "places.rating,places.priceLevel,places.photos,"
+                "places.location,places.types"
+            )
+        }
+
+
         for query in queries:
-            url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={query}&key={GOOGLE_API_KEY}"
-            response = requests.get(url)
+            url = "https://places.googleapis.com/v1/places:searchText"
+            payload = { "textQuery": query }
+
+            response = requests.post(url, headers=headers, json=payload)
             data = response.json()
 
-            if data.get("status") == "OK":
-                all_results.extend(data.get("results", []))
+            # ✅ Log raw response for debugging
+            print(f"🔍 Raw response for query '{query}':", data)
 
-        # Add photo_url for each place
+            if "places" in data:
+                all_results.extend(data["places"])
+
+        # ✅ Enrich data
+        enriched = []
         for place in all_results:
-            if "photos" in place:
-                photo_ref = place["photos"][0]["photo_reference"]
-                place[
-                    "photo_url"] = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_ref}&key={GOOGLE_API_KEY}"
-            else:
-                place["photo_url"] = "/placeholder.jpg"
+            place_id = place.get("id") or place.get("place_id")
+            if not place_id:
+                continue
 
-        return jsonify({"results": all_results}), 200
+            photo_list = place.get("photos")
+            if photo_list and isinstance(photo_list, list):
+                photo_name = photo_list[0].get("name")
+                if photo_name:
+                    place["photo_url"] = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={GOOGLE_API_KEY}"
+                    enriched.append(place)
+                    continue
+
+            print(f"⚠️ No image found for place ID: {place_id}")
+
+        print("✅ Enriched & filtered results:", enriched)
+        return jsonify({ "results": enriched }), 200
 
     except Exception as e:
-        print("Error fetching attractions:", str(e))
+        print("❌ Error fetching enriched attractions:", str(e))
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 

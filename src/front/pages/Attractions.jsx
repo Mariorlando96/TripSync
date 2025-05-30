@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { AttractionCard } from "../components/AttractionCard";
 import { useLocation } from "react-router-dom";
 
-// Helper to group cards
 const chunkArray = (arr, size) => {
     const result = [];
     for (let i = 0; i < arr.length; i += size) {
@@ -18,20 +17,61 @@ export const Attractions = () => {
     const [wishlist, setWishlist] = useState([]);
 
     const handleSearch = async (customQuery = query) => {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}attractions?destination=${encodeURIComponent(customQuery)}`
-        );
-        const data = await response.json();
-        setResults(data.results || []);
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}attractions?destination=${encodeURIComponent(customQuery)}`
+            );
+            const data = await response.json();
+            const rawResults = data.results || [];
+
+            const enrichedResults = await Promise.all(
+                rawResults.map(async (place) => {
+                    const placeId = place.place_id || place.id; // fallback
+                    if (!placeId) return null; // ✅ prevent invalid API calls
+
+                    try {
+                        const detailsRes = await fetch(
+                            `${import.meta.env.VITE_BACKEND_URL}place-details/${placeId}`
+                        );
+
+                        if (!detailsRes.ok) return null;
+
+                        const details = await detailsRes.json();
+
+                        const photo = details?.photos?.[0];
+                        const photo_url = photo?.name
+                            ? `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=400&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+                            : null;
+
+                        return {
+                            ...place,
+                            ...details,
+                            photo_url,
+                            place_id: placeId, // ✅ ensure it's always set
+                        };
+                    } catch (err) {
+                        console.error("❌ Error fetching details for", placeId, err);
+                        return null;
+                    }
+                })
+            );
+
+            // 🛠 Don't filter out places just because they have no photo
+            const filtered = enrichedResults.filter(p => p?.place_id);
+            setResults(filtered);
+            console.log("✅ Enriched & filtered results:", filtered);
+
+        } catch (error) {
+            console.error("❌ Error fetching attractions:", error);
+        }
     };
 
-
-    // Separate into restaurants and activities
     const restaurants = results.filter(place =>
         place.types && place.types.some(type => type.toLowerCase().includes("restaurant"))
     );
+
     const activities = results.filter(place =>
-        !place.types?.includes("restaurant")
+        !(place.types && place.types.some(type => type.toLowerCase().includes("restaurant")))
     );
 
     const chunkedRestaurants = chunkArray(restaurants, 3);
@@ -46,7 +86,6 @@ export const Attractions = () => {
         }
     }, [location]);
 
-
     useEffect(() => {
         const fetchWishlist = async () => {
             const token = localStorage.getItem("token");
@@ -54,14 +93,12 @@ export const Attractions = () => {
 
             try {
                 const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}wishlist`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` }
                 });
 
                 if (res.ok) {
                     const data = await res.json();
-                    const ids = data.map((item) => item.place_id);
+                    const ids = data.map(item => item.place_id);
                     setWishlist(ids);
                 }
             } catch (err) {
@@ -71,7 +108,6 @@ export const Attractions = () => {
 
         fetchWishlist();
     }, []);
-
 
     return (
         <div className="container my-4">
@@ -95,7 +131,6 @@ export const Attractions = () => {
                     </button>
                 </div>
             </div>
-
 
             {/* === Restaurants Carousel === */}
             {chunkedRestaurants.length > 0 && (
@@ -124,29 +159,13 @@ export const Attractions = () => {
                                             />
                                         ))}
                                     </div>
-
                                 </div>
-
                             ))}
-
                         </div>
-
-
-
-                        <button
-                            className="carousel-control-prev"
-                            type="button"
-                            data-bs-target="#restaurantCarousel"
-                            data-bs-slide="prev"
-                        >
+                        <button className="carousel-control-prev" type="button" data-bs-target="#restaurantCarousel" data-bs-slide="prev">
                             <span className="carousel-control-prev-icon"></span>
                         </button>
-                        <button
-                            className="carousel-control-next"
-                            type="button"
-                            data-bs-target="#restaurantCarousel"
-                            data-bs-slide="next"
-                        >
+                        <button className="carousel-control-next" type="button" data-bs-target="#restaurantCarousel" data-bs-slide="next">
                             <span className="carousel-control-next-icon"></span>
                         </button>
                     </div>
@@ -183,25 +202,21 @@ export const Attractions = () => {
                                 </div>
                             ))}
                         </div>
-
-                        <button
-                            className="carousel-control-prev"
-                            type="button"
-                            data-bs-target="#activityCarousel"
-                            data-bs-slide="prev"
-                        >
+                        <button className="carousel-control-prev" type="button" data-bs-target="#activityCarousel" data-bs-slide="prev">
                             <span className="carousel-control-prev-icon"></span>
                         </button>
-                        <button
-                            className="carousel-control-next"
-                            type="button"
-                            data-bs-target="#activityCarousel"
-                            data-bs-slide="next"
-                        >
+                        <button className="carousel-control-next" type="button" data-bs-target="#activityCarousel" data-bs-slide="next">
                             <span className="carousel-control-next-icon"></span>
                         </button>
                     </div>
                 </>
+            )}
+
+            {/* === Fallback Message === */}
+            {chunkedRestaurants.length === 0 && chunkedActivities.length === 0 && (
+                <p className="text-center text-muted mt-4">
+                    No attractions found for this destination. Try another city!
+                </p>
             )}
         </div>
     );
