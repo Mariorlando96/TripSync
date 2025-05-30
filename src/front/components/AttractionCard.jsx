@@ -1,6 +1,5 @@
 import React from "react";
 import { useTripSyncContext } from "../../contextapi";
-import rigoPhoto from "../assets/img/rigo-baby.jpg";
 import "../css/AttractionCard.css";
 
 export const AttractionCard = ({ place, isWishlisted, onToggleWishlist }) => {

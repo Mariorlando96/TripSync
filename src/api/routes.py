@@ -370,40 +370,32 @@ def get_hotels():
         if not GOOGLE_API_KEY:
             return jsonify({"error": "Google API Key not found"}), 500
 
-        print("Destination:", destination)
-        print("GOOGLE_API_KEY exists:", bool(GOOGLE_API_KEY))
+        # Use the new Google Places API (New)
+        url = "https://places.googleapis.com/v1/places:searchText"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": GOOGLE_API_KEY,
+            "X-Goog-FieldMask": (
+                "places.id,places.displayName,places.formattedAddress,"
+                "places.rating,places.priceLevel,places.photos,places.location"
+            )
+        }
+        payload = {
+            "textQuery": f"hotels in {destination}"
+        }
 
-        # Step 1: Get coordinates
-        geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={destination}&key={GOOGLE_API_KEY}"
-        geo_response = requests.get(geocode_url)
-        geo_data = geo_response.json()
+        res = requests.post(url, headers=headers, json=payload)
+        data = res.json()
 
-        print("Geocoding response:", geo_data)
+        if "places" not in data:
+            return jsonify({"error": "No places found", "response": data}), 404
 
-        if geo_data["status"] != "OK":
-            return jsonify({"error": "Failed to get coordinates"}), 500
-
-        location = geo_data["results"][0]["geometry"]["location"]
-        lat = location["lat"]
-        lng = location["lng"]
-
-        print("Coordinates:", lat, lng)
-
-        # Step 2: Get hotels
-        places_url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=5000&type=lodging&key={GOOGLE_API_KEY}"
-        places_response = requests.get(places_url)
-        places_data = places_response.json()
-
-        print("Places response:", places_data)
-
-        if places_data["status"] != "OK":
-            return jsonify({"error": "Failed to fetch hotels", "details": places_data}), 500
-
-        return jsonify(places_data["results"]), 200
+        return jsonify(data["places"]), 200
 
     except Exception as e:
-        print("Server error:", str(e))
+        print("New Places API error:", str(e))
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
+
 
 
 @api.route("/wishlist", methods=["POST"])

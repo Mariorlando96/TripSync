@@ -46,11 +46,14 @@ export const Hotels = () => {
 
             // For each hotel, fetch Place Details and merge
             const enrichedHotels = await Promise.all(
-                baseHotels.map(async (hotel) => {
-                    const details = await fetchPlaceDetails(hotel.place_id);
-                    return { ...hotel, ...details };
-                })
+                baseHotels
+                    .filter(hotel => hotel.id) // ✅ Only hotels with valid `id`
+                    .map(async (hotel) => {
+                        const details = await fetchPlaceDetails(hotel.id);
+                        return { ...hotel, ...details };
+                    })
             );
+
 
             setHotels(enrichedHotels);
             localStorage.setItem("start_date", format(dateRange[0].startDate, 'yyyy-MM-dd'));
@@ -181,12 +184,12 @@ export const Hotels = () => {
                                 <HotelCard
                                     key={i}
                                     hotel={hotel}
-                                    isWishlisted={wishlist.includes(hotel.place_id)}
+                                    isWishlisted={wishlist.includes(hotel.id)}
                                     onToggleWishlist={(hotel) => {
                                         setWishlist((prev) =>
-                                            prev.includes(hotel.place_id)
-                                                ? prev.filter((id) => id !== hotel.place_id)
-                                                : [...prev, hotel.place_id]
+                                            prev.includes(hotel.id)
+                                                ? prev.filter((id) => id !== hotel.id)
+                                                : [...prev, hotel.id]
                                         );
                                     }}
                                 />
