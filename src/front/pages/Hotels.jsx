@@ -21,6 +21,16 @@ export const Hotels = () => {
         }
     ]);
 
+    const validateImageUrl = (url) => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    };
+
+
     const calendarRef = useRef();
     useClickOutside(calendarRef, () => setOpenCalendar(false));
 
@@ -44,21 +54,36 @@ export const Hotels = () => {
                 return;
             }
 
-            // For each hotel, fetch Place Details and merge
             const enrichedHotels = await Promise.all(
                 baseHotels
-                    .filter(hotel => hotel.id) // ✅ Only hotels with valid `id`
+                    .filter(hotel => hotel.id)
                     .map(async (hotel) => {
                         const details = await fetchPlaceDetails(hotel.id);
                         return { ...hotel, ...details };
                     })
             );
 
+            const hotelsWithPhotos = enrichedHotels.filter(
+                hotel =>
+                    hotel?.photos?.[0]?.name &&
+                    hotel?.photos?.[0]?.widthPx >= 100 &&
+                    hotel?.photos?.[0]?.heightPx >= 100
+            );
 
-            setHotels(enrichedHotels);
+            const validatedHotels = [];
+
+            for (const hotel of hotelsWithPhotos) {
+                const photoUrl = `https://places.googleapis.com/v1/${hotel.photos[0].name}/media?maxWidthPx=400&key=${import.meta.env.VITE_GOOGLE_API_KEY}`;
+                const isValid = await validateImageUrl(photoUrl);
+
+                if (isValid) validatedHotels.push(hotel);
+                if (validatedHotels.length >= 20) break; // Optional: cap results
+            }
+
+            setHotels(validatedHotels);
+
             localStorage.setItem("start_date", format(dateRange[0].startDate, 'yyyy-MM-dd'));
             localStorage.setItem("end_date", format(dateRange[0].endDate, 'yyyy-MM-dd'));
-
 
         } catch (error) {
             console.error("Hotel search error:", error);
@@ -67,6 +92,7 @@ export const Hotels = () => {
 
         setLoading(false);
     };
+
 
 
     useEffect(() => {
