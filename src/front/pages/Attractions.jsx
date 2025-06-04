@@ -38,7 +38,7 @@ export const Attractions = () => {
 
                         const details = await detailsRes.json();
 
-                        const photo = details?.photos?.[0];
+                        const photo = place.photos?.[0];
                         const photo_url = photo?.name
                             ? `https://places.googleapis.com/v1/${photo.name}/media?maxWidthPx=400&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
                             : null;

@@ -10,10 +10,45 @@ export const AttractionCard = ({ place, isWishlisted, onToggleWishlist }) => {
         name,
         photo_url,
         rating,
-        price_level,
+        priceLevel,
         formatted_address,
         place_id,
     } = place;
+
+    const getPriceSymbol = (level) => {
+        switch (level) {
+            case "PRICE_LEVEL_FREE":
+                return "$";
+            case "PRICE_LEVEL_INEXPENSIVE":
+                return "$";
+            case "PRICE_LEVEL_MODERATE":
+                return "$$";
+            case "PRICE_LEVEL_EXPENSIVE":
+                return "$$$";
+            case "PRICE_LEVEL_VERY_EXPENSIVE":
+                return "$$$$";
+            default:
+                return "N/A";
+        }
+    };
+
+    const getTypeIcon = (types = []) => {
+        if (!Array.isArray(types)) return "✨";
+
+        const type = types[0]?.toLowerCase() || "";
+
+        if (type.includes("museum")) return "🏛️";
+        if (type.includes("garden") || type.includes("park") || type.includes("botanic")) return "🌿";
+        if (type.includes("zoo") || type.includes("wildlife")) return "🦁";
+        if (type.includes("amusement") || type.includes("arcade") || type.includes("fun")) return "🎡";
+        if (type.includes("beach")) return "🏖️";
+        if (type.includes("art")) return "🎨";
+        if (type.includes("tourist")) return "📍";
+
+        return "✨"; // Generic icon
+    };
+
+
 
     return (
         <div
@@ -51,10 +86,17 @@ export const AttractionCard = ({ place, isWishlisted, onToggleWishlist }) => {
                         <span className="badge bg-light text-dark px-2 py-1">
                             ⭐ {place.rating || "N/A"}
                         </span>
-                        <span className="text-muted small">
-                            💰 {price_level ? `$`.repeat(price_level) : "N/A"}
-                        </span>
+                        {place.priceLevel ? (
+                            <span className="text-muted small">
+                                💰 {getPriceSymbol(place.priceLevel)}
+                            </span>
+                        ) : (
+                            <span className="text-muted small">
+                                {getTypeIcon(place.types)} {place.types?.[0]?.replaceAll("_", " ")}
+                            </span>
+                        )}
                     </div>
+
                     <div>
                         <button
                             className="btn btn-sm btn-primary w-100 mt-2 mb-2"
