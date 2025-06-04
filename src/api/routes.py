@@ -197,7 +197,8 @@ def add_to_itinerary():
         location=data.get("location"),
         start_date=data.get("start_date"),
         end_date=data.get("end_date"),
-        note=data.get("note")
+        note=data.get("note"),
+        location_image_url=data.get("location_image_url")
     )
 
     db.session.add(new_item)

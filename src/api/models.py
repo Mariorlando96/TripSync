@@ -64,6 +64,7 @@ class Itinerary(db.Model):
     end_date: Mapped[str] = mapped_column(db.String(50), nullable=False)
 
     location: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    location_image_url = db.Column(db.Text, nullable=True)
     note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     hotel_name: Mapped[Optional[str]] = mapped_column(
         db.String(100), nullable=True)
@@ -87,6 +88,7 @@ class Itinerary(db.Model):
             "start_date": self.start_date,
             "end_date": self.end_date,
             "location": self.location,
+            "location_image_url": self.location_image_url,
             "hotel_name": self.hotel_name,
             "hotel_location": self.hotel_location,
             "attraction_name": self.attraction_name,

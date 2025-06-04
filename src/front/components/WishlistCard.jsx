@@ -13,7 +13,11 @@ const WishlistCard = ({ item, onRemove, onAddToItinerary, apiKey }) => {
     return (
         <div className="card shadow-sm position-relative wishlist-card">
             <img
-                src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photo_reference}&key=${apiKey}`}
+                src={
+                    item.photo_reference
+                        ? `https://places.googleapis.com/v1/${item.photo_reference}/media?maxWidthPx=400&key=${apiKey}`
+                        : rigoPhoto
+                }
                 className="card-img-top wishlist-card-img"
                 alt={item.name}
                 onError={(e) => (e.target.src = rigoPhoto)}
