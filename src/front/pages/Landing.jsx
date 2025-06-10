@@ -18,7 +18,16 @@ export const LandingPage = () => {
             try {
                 const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}top-destinations?query=${encodeURIComponent(query)}`);
                 const data = await res.json();
-                return data.results?.[0] || null;
+                if (data.results?.[0]) {
+                    const place = data.results[0];
+                    return {
+                        name: place.name || place.displayName?.text || "Unknown",
+                        address: place.address || place.formattedAddress || "",
+                        photo_url: place.photo_url || "/placeholder.jpg"
+                    };
+                }
+                return null;
+
             } catch (err) {
                 console.error(`Error fetching: ${query}`, err);
                 return null;

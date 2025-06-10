@@ -558,23 +558,49 @@ def get_top_destinations():
         return jsonify({"error": "Query parameter is required"}), 400
 
     try:
-        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={query}&key={GOOGLE_API_KEY}"
-        response = requests.get(url)
-        data = response.json()
+        # Step 1: Search for placeId using new Places API v1
+        search_url = f"https://places.googleapis.com/v1/places:searchText"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": GOOGLE_API_KEY,
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.photos,places.id"
+        }
+        payload = {
+            "textQuery": query,
+            "maxResultCount": 1
+        }
 
-        for place in data.get("results", []):
-            if "photos" in place:
-                photo_ref = place["photos"][0]["photo_reference"]
-                place[
-                    "photo_url"] = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo_ref}&key={GOOGLE_API_KEY}"
-            else:
-                place["photo_url"] = "/placeholder.jpg"
+        response = requests.post(search_url, headers=headers, json=payload)
+        response.raise_for_status()
+        results = response.json().get("places", [])
 
-        return jsonify({"results": data.get("results", [])}), 200
+        if not results:
+            return jsonify({"error": "No results found", "results": []}), 200
+
+        place = results[0]
+
+        photo_url = None
+        if "photos" in place and place["photos"]:
+            photo_name = place["photos"][0]["name"]
+            photo_url = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=400&key={GOOGLE_API_KEY}"
+
+        return jsonify({
+            "results": [{
+                "name": place["displayName"]["text"],
+                "address": place["formattedAddress"],
+                "photo_url": photo_url or "/placeholder.jpg"
+            }]
+        }), 200
+
+    except Exception as e:
+        print("Error fetching destination:", e)
+        return jsonify({"error": "Internal Server Error"}), 500
+
 
     except Exception as e:
         print("Error fetching destinations:", e)
         return jsonify({"error": "Internal Server Error"}), 500
+
 
 
 @api.route('/user/<int:user_id>', methods=['GET'])
