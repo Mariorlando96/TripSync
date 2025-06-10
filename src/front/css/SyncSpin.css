@@ -4,7 +4,6 @@
   align-items: center;
 }
 
-
 .selected-city {
   display: flex;
   justify-content: center;
@@ -39,9 +38,7 @@
   font-weight: bolder;
   border-color: white;
   box-shadow: 4px 4px 11px 0px #838383;
- 
 }
-
 
 .sync-card-img-top {
   height: 180px;
@@ -78,7 +75,7 @@
   height: 30px;
   font-size: small;
   display: block;
-
+}
 
 .sync-card-text {
   font-size: small;
@@ -119,8 +116,6 @@
     margin: 0;
   }
 
-
-
   .sync-card-body {
     height: auto;
     margin-top: 10px;
@@ -155,3 +150,27 @@
   background-color: white;
 }
 
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
+
+.spinner {
+  border: 6px solid #ccc;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

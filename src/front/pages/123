@@ -1,0 +1,94 @@
+{error && (
+                <div className="alert alert-danger text-center">
+                    {error}
+                </div>
+            )}
+
+            {loading ? (
+                <div className="text-center my-5">
+                    <Spinner />
+                    <p className="mt-2">Fetching your perfect trip...</p>
+                </div>
+            ) : (
+                <div className="container">
+                    <div className="row justify-content-center">
+                        {hotel && (
+                            <div className="col-sm-12 col-md-6 col-lg-4 d-flex flex-column align-items-center mb-4">
+                                <h1 className="display-4 text-center mb-3">Hotel</h1>
+                                <div className="card sync-card" style={{ width: "18rem" }}>
+                                    <img src={getPhotoUrl(hotel)} className="card-img-top sync-card-img-top" alt={hotel.name} />
+                                    <button className="btn btn-primary sync-itinerary-button" onClick={() => saveToItinerary(hotel, "Hotel")}>
+                                        Add to Itinerary
+                                    </button>
+                                    <div className="card-body sync-card-body">
+                                        <h5 className="card-title">{hotel.name}</h5>
+                                        <p className="card-text sync-card-text">{getAddress(hotel)}</p>
+                                    </div>
+                                    <div className="card-footer sync-card-footer">
+                                        <a
+                                            className="btn btn-outline-primary sync-maps-button"
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name || "")}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <i className="fa-solid fa-location-dot"></i>View on Maps
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {restaurant && (
+                            <div className="col-sm-12 col-md-6 col-lg-4 d-flex flex-column align-items-center mb-4">
+                                <h1 className="display-4 text-center mb-3">Restaurant</h1>
+                                <div className="card sync-card" style={{ width: "18rem" }}>
+                                    <img src={getPhotoUrl(restaurant)} className="card-img-top sync-card-img-top" alt={restaurant.name} />
+                                    <button className="btn btn-primary sync-itinerary-button" onClick={() => saveToItinerary(restaurant, "Restaurant")}>
+                                        Add to Itinerary
+                                    </button>
+                                    <div className="card-body sync-card-body">
+                                        <h5 className="card-title">{restaurant.name}</h5>
+                                        <p className="card-text sync-card-text">{getAddress(restaurant)}</p>
+                                    </div>
+                                    <div className="card-footer sync-card-footer">
+                                        <a
+                                            className="btn btn-outline-primary sync-maps-button"
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.name || "")}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <i className="fa-solid fa-location-dot"></i>View on Maps
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {attraction && (
+                            <div className="col-sm-12 col-md-6 col-lg-4 d-flex flex-column align-items-center mb-4">
+                                <h1 className="display-4 text-center mb-3">Attraction</h1>
+                                <div className="card sync-card" style={{ width: "18rem" }}>
+                                    <img src={getPhotoUrl(attraction)} className="card-img-top sync-card-img-top" alt={attraction.name} />
+                                    <button className="btn btn-primary sync-itinerary-button" onClick={() => saveToItinerary(attraction, "Attraction")}>
+                                        Add to Itinerary
+                                    </button>
+                                    <div className="card-body sync-card-body">
+                                        <h5 className="card-title">{attraction.name}</h5>
+                                        <p className="card-text sync-card-text">{getAddress(attraction)}</p>
+                                    </div>
+                                    <div className="card-footer sync-card-footer">
+                                        <a
+                                            className="btn btn-outline-primary sync-maps-button"
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(attraction.name || "")}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <i className="fa-solid fa-location-dot"></i>View on Maps
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}

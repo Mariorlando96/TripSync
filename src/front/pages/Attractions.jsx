@@ -59,7 +59,6 @@ export const Attractions = () => {
             // 🛠 Don't filter out places just because they have no photo
             const filtered = enrichedResults.filter(p => p?.place_id);
             setResults(filtered);
-            console.log("✅ Enriched & filtered results:", filtered);
 
         } catch (error) {
             console.error("❌ Error fetching attractions:", error);
