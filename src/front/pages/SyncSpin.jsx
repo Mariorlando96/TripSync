@@ -9,7 +9,7 @@ const cities = [
     "Paris", "Tokyo", "New York", "Sydney", "Barcelona",
     "Rio de Janeiro", "Rome", "Madrid", "London", "Cairo",
     "Dublin", "Istanbul", "San Francisco", "Berlin", "Mexico City",
-    "Vancouver", "Seoul", "Johannesburg", "Buenos Aires", "Amsterdam",
+    "Vancouver", "Seoul", "Johannesburg", "Buenos Aires", "Amsterdam", "Miami", "Seattle",
 ];
 
 const getRandomRotation = () => {
@@ -166,9 +166,13 @@ const SyncSpin = () => {
 
     const spinWheel = async () => {
         const newRotation = getRandomRotation();
-        const finalIndex = Math.floor((newRotation % 360) / (360 / cities.length));
+
+        const anglePerCity = 360 / cities.length;
+        const adjustedAngle = (360 - (newRotation % 360) + 90) % 360;
+        const finalIndex = Math.floor(adjustedAngle / anglePerCity) % cities.length;
         const selected = cities[finalIndex];
-        setSelectedCity(selected);
+
+
 
         await controls.start({
             rotate: newRotation,
@@ -179,6 +183,7 @@ const SyncSpin = () => {
             },
         });
 
+        setSelectedCity(selected);
         fetchData(selected);
     };
 
@@ -187,6 +192,7 @@ const SyncSpin = () => {
             <div className="row justify-content-center align-items-center my-5">
                 <div className="col-sm-12 col-md-8 col-lg-6 col-xxl-3 text-center wheel-wrapper">
                     <div className="wheel-canvas-wrapper position-relative">
+                        <div className="wheel-marker"></div>
                         <motion.canvas
                             className="wheel-canvas"
                             width="300"
@@ -196,7 +202,16 @@ const SyncSpin = () => {
                         />
                     </div>
                     <h1 className="destination-announce mt-4 display-2">Your next destination:</h1>
-                    {selectedCity && <h2 className="selected-city display-1"><strong>{selectedCity}!</strong></h2>}
+                    {selectedCity && (
+                        <motion.h2
+                            className="selected-city display-1"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                        >
+                            <strong>{selectedCity}!</strong>
+                        </motion.h2>
+                    )}
                 </div>
                 <div className="col-sm-12 col-md-8 col-lg-6 col-xxl-3 jumbo-wrapper">
                     <div className="jumbotron-container text-center">
@@ -235,6 +250,14 @@ const SyncSpin = () => {
                                     <div className="card-body sync-card-body">
                                         <h5 className="card-title">{hotel.name}</h5>
                                         <p className="card-text sync-card-text">{getAddress(hotel)}</p>
+                                        {hotel.rating && (
+                                            <p className="card-text sync-card-text">⭐ Rating: {hotel.rating}</p>
+                                        )}
+                                        {hotel.userRatingCount || hotel.user_ratings_total ? (
+                                            <p className="card-text sync-card-text">
+                                                📈 Reviews: {hotel.userRatingCount || hotel.user_ratings_total}
+                                            </p>
+                                        ) : null}
                                     </div>
                                     <div className="card-footer sync-card-footer">
                                         <a
@@ -261,6 +284,14 @@ const SyncSpin = () => {
                                     <div className="card-body sync-card-body">
                                         <h5 className="card-title">{restaurant.name}</h5>
                                         <p className="card-text sync-card-text">{getAddress(restaurant)}</p>
+                                        {restaurant.rating && (
+                                            <p className="card-text sync-card-text">⭐ Rating: {restaurant.rating}</p>
+                                        )}
+                                        {restaurant.userRatingCount || restaurant.user_ratings_total ? (
+                                            <p className="card-text sync-card-text">
+                                                📈 Reviews: {restaurant.userRatingCount || restaurant.user_ratings_total}
+                                            </p>
+                                        ) : null}
                                     </div>
                                     <div className="card-footer sync-card-footer">
                                         <a
@@ -287,6 +318,14 @@ const SyncSpin = () => {
                                     <div className="card-body sync-card-body">
                                         <h5 className="card-title">{attraction.name}</h5>
                                         <p className="card-text sync-card-text">{getAddress(attraction)}</p>
+                                        {attraction.rating && (
+                                            <p className="card-text sync-card-text">⭐ Rating: {attraction.rating}</p>
+                                        )}
+                                        {attraction.userRatingCount || attraction.user_ratings_total ? (
+                                            <p className="card-text sync-card-text">
+                                                📈 Reviews: {attraction.userRatingCount || attraction.user_ratings_total}
+                                            </p>
+                                        ) : null}
                                     </div>
                                     <div className="card-footer sync-card-footer">
                                         <a

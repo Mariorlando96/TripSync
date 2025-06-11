@@ -51,10 +51,7 @@
 }
 
 .sync-card-body {
-  padding-top: 10px !important;
-  margin-top: 20px;
-  height: 120px;
-  overflow: hidden;
+  padding: 10px 15px;
 }
 
 .sync-card {
@@ -78,7 +75,10 @@
 }
 
 .sync-card-text {
-  font-size: small;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  color: #333;
 }
 
 .container-row {
@@ -118,7 +118,6 @@
 
   .sync-card-body {
     height: auto;
-    margin-top: 10px;
     padding-top: 20px !important;
   }
 }
@@ -164,6 +163,19 @@
   width: 50px;
   height: 50px;
   animation: spin 0.9s linear infinite;
+}
+
+.wheel-marker {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid red;
+  z-index: 10;
 }
 
 @keyframes spin {
