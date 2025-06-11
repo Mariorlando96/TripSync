@@ -262,7 +262,7 @@ const SyncSpin = () => {
                                     <div className="card-footer sync-card-footer">
                                         <a
                                             className="btn btn-outline-primary sync-maps-button"
-                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name || "")}`}
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.displayName?.text || "")}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -296,7 +296,7 @@ const SyncSpin = () => {
                                     <div className="card-footer sync-card-footer">
                                         <a
                                             className="btn btn-outline-primary sync-maps-button"
-                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.name || "")}`}
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(restaurant.displayName?.text || "")}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -330,7 +330,7 @@ const SyncSpin = () => {
                                     <div className="card-footer sync-card-footer">
                                         <a
                                             className="btn btn-outline-primary sync-maps-button"
-                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(attraction.name || "")}`}
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(attraction.displayName?.text || "")}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >

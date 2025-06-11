@@ -55,7 +55,9 @@
 }
 
 .sync-card {
-  height: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .sync-itinerary-button {
